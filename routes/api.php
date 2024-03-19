@@ -40,7 +40,7 @@ Route::get("agentdetails",[AgentDetailsController::class,'AgentDetails']);
 Route::post("orderaccept",[AcceptController::class,'OrderAccept']);
 Route::any("transfermoney",[AcceptController::class,'Remark']);
 Route::any("pendingpayment",[AcceptController::class,'PendingPayment']);
-Route::any("add_payment",[AcceptController::class,'AddPayment']);
+Route::any("addpayment",[AcceptController::class,'AddPayment']);
 Route::any("fetch_transaction",[AcceptController::class,'FetchTransaction']);
 
 
@@ -70,6 +70,9 @@ Route::any("Transferlist",[TransferListController::class,'TransferList']);
 Route::any("SendMoney",[TransferListController::class,'SendMoney']);
 Route::any("AgentList",[TransferListController::class,'AgentList']);
 Route::any("ClientList",[TransferListController::class,'ClientList']);
+Route::any("WalletBalance",[TransferListController::class,'walletbalance']);
+Route::any("AdvancePaymentList",[TransferListController::class,'AdvancePaymentList']);
+
 
 
 

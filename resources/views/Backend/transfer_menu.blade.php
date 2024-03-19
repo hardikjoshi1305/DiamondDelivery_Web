@@ -73,7 +73,7 @@
                                 <option value="">Select Client Name</option>
                                 @foreach ($party as $partys)
                                     <option value="{{ $partys->name }}"
-                                        {{ old('party_id', Request::get('party_id')) == $partys->id ? 'selected' : '' }}>
+                                        {{ old('party_id', Request::get('party_id')) == $partys->name ? 'selected' : '' }}>
                                         {{ $partys->name }}</option>
                                 @endforeach
                             </select>
@@ -98,7 +98,7 @@
                         </div>
                         <div class="col-sm-1 mt-4">
                             <button type="button" class="btn btn-secondary" style="margin-top: 5px;" id="mdlshow">
-                                <i class="fa fa-plus mr-2"></i>Send Money
+                                <i class="fa fa-plus mr-2"></i>Receive Money
                             </button>
                         </div>
                 </form>
@@ -129,9 +129,9 @@
                                             <th>PartyName</th>
                                             <th>ItemName</th>
                                             <th>Amount</th>
+                                            <th>Remaining Amount</th>
                                             <th>Weight</th>
                                             <th>Remark</th>
-
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -147,6 +147,7 @@
                                                 <td>{{ $diamonds->party_id }}</td>
                                                 <td>{{ $diamonds->item_id }}</td>
                                                 <td>{{ number_format($diamonds->amount, 2) }}</td>
+                                                <td>{{ number_format($diamonds->remaining_amount, 2) }}</td>
                                                 <td>{{ $diamonds->weight }}</td>
                                                 <td>{{ $diamonds->reason }}</td>
 
@@ -220,20 +221,11 @@
 @section('script')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <!-- CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-
-    <!-- JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('#bootstrap-data-table-export').DataTable({
-                "order": [
-                    [0, 'desc']
-                ] // Order by the first column (index 0) in descending order
-            });
-        });
-    </script>
+
+
+
     <script>
         var SITEURL = '{{ URL::to('') }}';
         $(document).ready(function() {
@@ -254,7 +246,6 @@
             $('#name').select2({
                 placeholder: 'Select Agent Name',
                 allowClear: true, // optional
-
             });
         });
     </script>

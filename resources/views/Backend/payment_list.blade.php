@@ -47,7 +47,7 @@
                                         @foreach ($payment as $row)
                                             <tr>
                                                 <td>{{ $row->id }}</td>
-                                                <td>{{ $row->date }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($row->date)->format('d-m-Y') }}</td>
                                                 <td>{{ $row->order_id }}</td>
                                                 <td>{{ $row->agent_name }}</td>
                                                 <td>{{ $row->transfer_amount }}</td>

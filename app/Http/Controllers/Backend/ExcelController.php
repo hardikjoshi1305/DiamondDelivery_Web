@@ -17,7 +17,7 @@ use Illuminate\Http\Response;
 use App\Models\Shipment;
 use Illuminate\Support\Stringable;
 use DB;
-use App\Models\User;    
+use App\Models\User;
 
 class ExcelController extends Controller
 {
@@ -36,8 +36,6 @@ class ExcelController extends Controller
         $party = Party::all();
         return view('Backend.Excel', compact('agent', 'party', 'shipment'));
     }
-
-
     public function UploadExcelOLD(Request $request)
     {
         // return $request;

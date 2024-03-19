@@ -33,12 +33,11 @@ class TransferBalanceController extends Controller
                 $query->where('tbl_order_accept.status', '=', 1)
                     ->orWhere('tbl_order_accept.status', '=', 2);
             })
-            ->select('tbl_order_accept.*', 'tbl_agent.name as agent_name', 'tbl_party.name as party_name');
+            ->select('tbl_order_accept.*', 'tbl_agent.name as agent_name', 'tbl_party.name as party_name')     ->orderBy('tbl_order_accept.id','desc');
 
         if ($fromDate && $toDate) {
             $diamondQuery->whereBetween(DB::raw('DATE(tbl_order_accept.created_at)'), [$fromDate, $toDate]);
         }
-
         if ($agentId) {
             $diamondQuery->where('tbl_order_accept.agent_id', $agentId);
         }
@@ -49,7 +48,7 @@ class TransferBalanceController extends Controller
         if ($type && $type !== 'all') {
             $diamondQuery->where('tbl_order_accept.type', $type);
         }
-        $diamond = $diamondQuery->orderBy('tbl_order_accept.created_at', 'DESC')->get();
+        $diamond = $diamondQuery->orderBy('tbl_order_accept.id','desc')->get();
         return view('Backend.transfer_menu', compact('diamond', 'agent', 'party'));
     }
 
@@ -68,7 +67,7 @@ class TransferBalanceController extends Controller
         $order->remaining_amount = $request->amount;
         $order->reason = $request->reason;
         $order->status = 2;
-        $order->type = "Credit";
+        $order->type = "Debit";
 
         $order->save();
 
@@ -111,7 +110,7 @@ class TransferBalanceController extends Controller
             $collectionOrder->where('tbl_order_accept.party_id', $partyId);
         }
 
-        $collection = $collectionOrder->orderBy('tbl_order_accept.created_at', 'DESC')->get();
+        $collection = $collectionOrder->orderBy('tbl_order_accept.id', 'desc')->get();
         return view('Backend.collection', compact('collection', 'agent', 'party'));
     }
 

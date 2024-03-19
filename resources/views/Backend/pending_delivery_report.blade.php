@@ -6,7 +6,7 @@
         }
     </style>
     <div class="breadcrumbs">
-        <form action="{{ route('collection.order') }}" method="get">
+        <form action="{{ route('pending.delivery') }}" method="get">
             <div class="col-sm-2" style="margin-top: 19px;">
                 <div class="form-group">
                     <label for="fromDate" class="form-label"><strong>From Date</strong></label>
@@ -49,19 +49,11 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-sm-2" style="margin-top: 19px;">
-                <div class="form-group">
-                    <label for="fromDate" class="form-label"><strong>Total Collection</strong></label>
-                    <div class="input-group">
-                        <input type="number" name="total_collection" id="total_collection" class="form-control"
-                            value="" readonly>
-                    </div>
-                </div>
-            </div>
+
             <div class="col-sm-2 mt-5">
                 <div class="form-group">
                     <button type="submit" class="btn btn-secondary">Search</button>
-                    <a href="{{ route('collection.order') }}">
+                    <a href="{{ route('pending.delivery') }}">
                         <button type="button" class="btn btn-secondary">Refresh</button>
                     </a>
                 </div>
@@ -95,30 +87,22 @@
                                             <th>Amount</th>
                                             <th>RemainingAmount</th>
                                             <th>Weight</th>
-                                            <th>Remark</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @php
-                                            $totalAmount = 0;
-                                        @endphp
                                         @foreach ($collection as $row)
-                                            <tr>
-                                                <td>{{ $row->id }}</td>
-                                                <td>{{ \Carbon\Carbon::parse($row->date)->format('d-m-Y') }}</td>
-                                                <td>{{ $row->type }}</td>
-                                                <td>{{ $row->payment }}</td>
-                                                <td>{{ $row->agent_name }}</td>
-                                                <td>{{ $row->party_id }}</td>
-                                                <td>{{ $row->item_id }}</td>
-                                                <td>{{ number_format($row->amount, 2) }}</td>
-                                                @php
-                                                    $totalAmount += $row->amount;
-                                                @endphp
-                                                <td>{{ number_format($row->remaining_amount, 2) }}</td>
-                                                <td>{{ $row->weight }}</td>
-                                                <td>{{ $row->reason }}</td>
-                                            </tr>
+                                        <tr>
+                                            <td>{{ $row->id }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($row->date)->format('d-m-Y') }}</td>
+                                            <td>{{ $row->type }}</td>
+                                            <td>{{ $row->payment }}</td>
+                                            <td>{{ $row->agent_name }}</td>
+                                            <td>{{ $row->party_id }}</td>
+                                            <td>{{ $row->item_id }}</td>
+                                            <td>{{ number_format($row->amount, 2) }}</td>
+                                            <td>{{ number_format($row->remaining_amount, 2) }}</td>
+                                            <td>{{ $row->weight }}</td>
+                                        </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
@@ -139,10 +123,5 @@
 
     <!-- JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            var formattedTotalAmount = parseFloat({{ $totalAmount }}).toFixed(2);
-            $('#total_collection').val(formattedTotalAmount);
-        });
-    </script>
+
 @endsection

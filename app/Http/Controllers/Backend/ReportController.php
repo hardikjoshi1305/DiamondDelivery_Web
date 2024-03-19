@@ -21,6 +21,7 @@ use App\Exports\DiamondDetailsPDF;
 use DB;
 use Excel;
 use PDF;
+use App\Models\AdvancePayment;
 
 class ReportController extends Controller
 {
@@ -96,6 +97,68 @@ class ReportController extends Controller
         $remainId = $request->remaining_weight;
 
         return Excel::download(new DiamondDetails($fromDate, $toDate,$agentId,$remainId,$partyId), 'DiamondDetails.xlsx');
+    }
+
+    public function PendingDelivery(Request $request)
+    {
+        $agent = Agent::all();
+        $party = Party::all();
+
+        $fromDate = $request->input('fromDate');
+        $toDate = $request->input('toDate');
+        $agentId = $request->input('agent_id');
+        $partyId = $request->input('party_id');
+
+        $collectionOrder = OrderAccept::leftJoin('tbl_diamond_list', 'tbl_diamond_list.id', '=', 'tbl_order_accept.item_id')
+        ->leftJoin('tbl_agent', 'tbl_agent.id', '=', 'tbl_order_accept.agent_id')
+        ->leftJoin('tbl_party', 'tbl_party.id', '=', 'tbl_order_accept.party_id')
+        ->where('tbl_order_accept.payment', '=', "Credit")
+        ->where('tbl_order_accept.status', '=', "1")
+        ->select('tbl_order_accept.*', 'tbl_agent.name as agent_name', 'tbl_party.name as party_name');
+
+        if ($fromDate && $toDate) {
+            $collectionOrder->whereBetween(DB::raw('DATE(tbl_order_accept.created_at)'), [$fromDate, $toDate]);
+        }
+        if ($agentId) {
+            $collectionOrder->where('tbl_order_accept.agent_id', $agentId);
+        }
+        if ($partyId) {
+            $collectionOrder->where('tbl_order_accept.party_id', $partyId);
+        }
+
+        $collection = $collectionOrder->orderBy('tbl_order_accept.created_at', 'desc')->get();
+
+        return view('Backend.pending_delivery_report',compact('agent','party','collection'));
+    }
+    public function StockReject(Request $request)
+    {
+        $agent = Agent::all();
+        $party = Party::all();
+
+        $fromDate = $request->input('fromDate');
+        $toDate = $request->input('toDate');
+        $agentId = $request->input('agent_id');
+        $partyId = $request->input('party_id');
+
+        $collectionOrder = OrderAccept::leftJoin('tbl_diamond_list', 'tbl_diamond_list.id', '=', 'tbl_order_accept.item_id')
+        ->leftJoin('tbl_agent', 'tbl_agent.id', '=', 'tbl_order_accept.agent_id')
+        ->leftJoin('tbl_party', 'tbl_party.id', '=', 'tbl_order_accept.party_id')
+        ->where('tbl_order_accept.status', '=', "0")
+        ->select('tbl_order_accept.*', 'tbl_agent.name as agent_name', 'tbl_party.name as party_name');
+
+        if ($fromDate && $toDate) {
+            $collectionOrder->whereBetween(DB::raw('DATE(tbl_order_accept.created_at)'), [$fromDate, $toDate]);
+        }
+        if ($agentId) {
+            $collectionOrder->where('tbl_order_accept.agent_id', $agentId);
+        }
+        if ($partyId) {
+            $collectionOrder->where('tbl_order_accept.party_id', $partyId);
+        }
+
+        $collection = $collectionOrder->orderBy('tbl_order_accept.created_at', 'desc')->get();
+
+        return view('Backend.stock_reject_report',compact('collection','agent','party'));
     }
     public function generatePDF(Request $request)
     {
@@ -303,5 +366,32 @@ class ReportController extends Controller
         $partyId = $request->party_id;
 
         return Excel::download(new SoldWise($fromDate, $toDate,$agentId,$partyId), 'SoldWise.xlsx');
+    }
+
+    public function ledger(Request $request)
+    {
+        $agent = Agent::all();
+        $party = Party::all();
+
+        $fromDate = $request->input('fromDate');
+        $toDate = $request->input('toDate');
+        $agentId = $request->input('agent_id');
+        $partyId = $request->input('party_id');
+
+        $collectionOrder = AdvancePayment::leftJoin('tbl_agent', 'tbl_agent.id', '=', 'tbl_advance_payment.agent_id')
+        ->leftJoin('tbl_party', 'tbl_party.id', '=', 'tbl_advance_payment.party_id')
+        ->select('tbl_advance_payment.*', 'tbl_agent.name as agent_name', 'tbl_party.name as party_name');
+
+        if ($fromDate && $toDate) {
+            $collectionOrder->whereBetween(DB::raw('DATE(tbl_advance_payment.created_at)'), [$fromDate, $toDate]);
+        }
+        if ($agentId) {
+            $collectionOrder->where('tbl_advance_payment.agent_id', $agentId);
+        }
+        if ($partyId) {
+            $collectionOrder->where('tbl_advance_payment.party_id', $partyId);
+        }
+        $collection = $collectionOrder->orderBy('tbl_advance_payment.id', 'desc')->get();
+        return view('Backend.Ledger',compact('agent','party','collection'));
     }
 }

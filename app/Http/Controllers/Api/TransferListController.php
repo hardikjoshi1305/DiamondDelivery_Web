@@ -11,6 +11,7 @@ use PDF;
 use App\Models\Agent;
 use App\Models\AddPayment;
 use App\Models\Party;
+use App\Models\AdvancePayment;
 
 class TransferListController extends Controller
 {
@@ -73,14 +74,24 @@ class TransferListController extends Controller
     {
         $order = new OrderAccept();
         $order->date = $request->date;
-        $order->agent_id = $request->name;
+        $order->agent_id = $request->agent_id;
         $order->amount = $request->amount;
         $order->remaining_amount = $request->amount;
         $order->party_id = $request->party_id;
         $order->reason = $request->reason;
         $order->status = 2;
-        $order->type = "Debit";
+        $order->type = "Credit";
         $order->save();
+
+        $advance = new AdvancePayment();
+        $advance->date = $request->date;
+        $advance->agent_id = $request->agent_id;
+        $advance->amount = $request->amount;
+        $advance->wallet = $request->amount;
+        $advance->party_id = $request->party_id;
+        $advance->reason = $request->reason;
+        $advance->check = "Credit";
+        $advance->save();
 
         return response()->json(['success' => true, 'message' => 'Send Money Successfully']);
     }
@@ -116,4 +127,50 @@ class TransferListController extends Controller
 
         return response()->json($data);
     }
+    public function walletbalance(Request $request)
+    {
+        $agent_id = $request->agent_id;
+        $party_id = $request->party_id;
+
+        $wallet = AdvancePayment::where('agent_id', $agent_id)
+                                ->where('party_id', $party_id)
+                                ->where('wallet','!=',"0")
+                                ->first();
+
+        if ($wallet) {
+            $data['success'] = true;
+            $data['data'] = $wallet;
+            $data['message'] = "Successfully Show Wallet Balance";
+        } else {
+            $data = [
+                'success' => false,
+                'data' => null,
+                'message' => 'Wallet Balance is not sufficient.'
+            ];
+        }
+        return response()->json($data);
+    }
+    public function AdvancePaymentList(Request $request)
+    {
+        $party_id = $request->party_id;
+        if($party_id)
+        {
+            $advance = AdvancePayment::where('party_id', $party_id)->orderByDesc('id')->get();
+        }else{
+            $advance = AdvancePayment::orderByDesc('id')->get();
+        }
+        if ($advance->isEmpty()) {
+            return response([
+                'success' => true,
+                'data' => null,
+                'message' => 'Advance PaymentList are empty.'
+            ], 200);
+        }
+        $data['success'] = true;
+        $data['data'] = $advance;
+        $data['message'] = "Successfully Show Advance PaymentList";
+
+        return response()->json($data);
+    }
+
 }

@@ -95,6 +95,20 @@
                         <a href="{{ route('report') }}" aria-haspopup="true" aria-expanded="false"> <i
                                 class="menu-icon fa fa-bookmark-o"></i>Diamond Wise Report</a>
                     </li>
+
+                    <li class="side-nav-item">
+                        <a href="{{ route('pending.delivery') }}" aria-haspopup="true" aria-expanded="false"> <i
+                                class="menu-icon fa fa-bookmark-o"></i>Pending Delivery Report</a>
+                    </li>
+                    <li class="side-nav-item">
+                        <a href="{{ route('stock.reject') }}" aria-haspopup="true" aria-expanded="false"> <i
+                                class="menu-icon fa fa-bookmark-o"></i>Stock Rejected Report</a>
+                    </li>
+                    <li class="side-nav-item">
+                        <a href="{{ route('ledger') }}" aria-haspopup="true" aria-expanded="false"> <i
+                                class="menu-icon fa fa-bookmark-o"></i>Ledger</a>
+                    </li>
+
                     <li class="side-nav-item" style="display: none;">
                         <a href="{{ route('agent.report') }}" aria-haspopup="true" aria-expanded="false"> <i
                                 class="menu-icon fa fa-bookmark-o"></i>Agent Wise Report</a>
@@ -119,7 +133,6 @@
 
 
     <div id="right-panel" class="right-panel">
-
         <!-- Header-->
         <header id="header" class="header">
 
@@ -130,13 +143,10 @@
                     <div class="header-left">
                     </div>
                 </div>
-
                 <?php
                     $accept = DB::table('tbl_order_accept')
                             ->where('read_at', 0)
                             ->count();
-                            {{--  print_r($accept);  --}}
-
                 ?>
                 <div class="col-sm-5">
                     <div class="user-area dropdown float-right">
@@ -187,7 +197,7 @@
                 </div>
             </div>
         </footer>
-    </div><!-- /#right-panel -->
+    </div>
 
 
 
@@ -196,7 +206,6 @@
     <script src="{{ asset('public/Backend/vendors/bootstrap/dist/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('public/Backend/vendors/assets/js/main.js') }}"></script>
 
-    <script src="https://cdn.datatables.net/1.11.1/js/jquery.dataTables.min.js"></script>
 
     <script src="{{ asset('public/Backend/vendors/jqvmap/dist/jquery.vmap.min.js') }}"></script>
     <script src="{{ asset('public/Backend/vendors/jqvmap/examples/js/jquery.vmap.sampledata.js') }}"></script>
@@ -215,12 +224,11 @@
     <script src="{{ asset('public/Backend/vendors/datatables.net-buttons/js/buttons.print.min.js') }}"></script>
     <script src="{{ asset('public/Backend/vendors/datatables.net-buttons/js/buttons.colVis.min.js') }}"></script>
     <script src="{{ asset('public/Backend/vendors/assets/js/init-scripts/data-table/datatables-init.js') }}"></script>
-    
+
     <script src="https://code.jquery.com/jquery-3.7.0.js" integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM="
         crossorigin="anonymous"></script>
     <script src="{{ asset('public/Backend/vendors/assets/latest/js/toastr.min.js') }}"></script>
 
-    <!-- Include SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
 
     @yield('script')

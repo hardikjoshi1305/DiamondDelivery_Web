@@ -63,6 +63,7 @@ Route::namespace('Admin')->prefix('admin')->group(function () {
     Route::any('update/diamond',[ExcelController::class,'UpdateDiamond'])->name('update.diamond');
     Route::any('delete/{id}',[ExcelController::class,'deleteDiamond'])->name('delete');
 
+
     // Report
     Route::any('report',[ReportController::class,'index'])->name('report');
     Route::any('export/csv',[ReportController::class,'exportCSVFile'])->name('export.csv');
@@ -75,6 +76,12 @@ Route::namespace('Admin')->prefix('admin')->group(function () {
     Route::any('sold/report',[ReportController::class,'SoldWise'])->name('sold.report');
     Route::any('sold/export/csv',[ReportController::class,'SoldexportCSVFile'])->name('sold.export.csv');
     Route::any('sold/generate/pdf',[ReportController::class,'SoldgeneratePDF'])->name('sold.generate.pdf');
+    Route::any('pending/delivery',[ReportController::class,'PendingDelivery'])->name('pending.delivery');
+    Route::any('stock/reject',[ReportController::class,'StockReject'])->name('stock.reject');
+    Route::any('ledger',[ReportController::class,'ledger'])->name('ledger');
+
+
+
 
 
     Route::any('notification',[NotificationController::class,'Index'])->name('notification');

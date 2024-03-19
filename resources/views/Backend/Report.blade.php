@@ -40,7 +40,7 @@
                                 <option value="">Select Client Name</option>
                                 @foreach ($party as $partys)
                                     <option value="{{ $partys->name }}"
-                                        {{ old('party_id', Request::get('party_id')) == $partys->id ? 'selected' : '' }}>
+                                        {{ old('party_id', Request::get('party_id')) == $partys->name ? 'selected' : '' }}>
                                         {{ $partys->name }}</option>
                                 @endforeach
                             </select>
@@ -196,7 +196,7 @@
                                     <tbody>
                                         @foreach ($diamonddetails as $diamonddetail)
                                             <tr>
-                                                <td>{{ $diamonddetail->shipment_date }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($diamonddetail->shipment_date)->format('d-m-Y') }}</td>
                                                 <td>{{ $diamonddetail->shipment_mode }}</td>
                                                 <td>{{ $diamonddetail->sn_no }}</td>
                                                 <td>{{ $diamonddetail->sell_date }}</td>
