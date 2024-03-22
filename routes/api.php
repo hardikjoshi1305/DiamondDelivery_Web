@@ -71,7 +71,7 @@ Route::any("SendMoney",[TransferListController::class,'SendMoney']);
 Route::any("AgentList",[TransferListController::class,'AgentList']);
 Route::any("ClientList",[TransferListController::class,'ClientList']);
 Route::any("WalletBalance",[TransferListController::class,'walletbalance']);
-Route::any("AdvancePaymentList",[TransferListController::class,'AdvancePaymentList']);
+Route::any("LedgerList",[TransferListController::class,'AdvancePaymentList']);
 
 
 

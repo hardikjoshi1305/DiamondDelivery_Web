@@ -372,26 +372,36 @@ class ReportController extends Controller
     {
         $agent = Agent::all();
         $party = Party::all();
-
         $fromDate = $request->input('fromDate');
         $toDate = $request->input('toDate');
         $agentId = $request->input('agent_id');
         $partyId = $request->input('party_id');
-
+        $results = DB::table(DB::raw('(SELECT agent_id, remaining_wallet, ROW_NUMBER() OVER (PARTITION BY agent_id ORDER BY id DESC) AS rn FROM tbl_advance_payment) AS subquery'))
+        ->select('agent_id', 'remaining_wallet')
+        ->where('rn', '=', 1)
+        ->get();
+        $totalWallet = $results->sum('remaining_wallet');
         $collectionOrder = AdvancePayment::leftJoin('tbl_agent', 'tbl_agent.id', '=', 'tbl_advance_payment.agent_id')
-        ->leftJoin('tbl_party', 'tbl_party.id', '=', 'tbl_advance_payment.party_id')
-        ->select('tbl_advance_payment.*', 'tbl_agent.name as agent_name', 'tbl_party.name as party_name');
-
+            ->leftJoin('tbl_party', 'tbl_party.id', '=', 'tbl_advance_payment.party_id')
+            ->select('tbl_advance_payment.*', 'tbl_agent.name as agent_name', 'tbl_party.name as party_name');
         if ($fromDate && $toDate) {
             $collectionOrder->whereBetween(DB::raw('DATE(tbl_advance_payment.created_at)'), [$fromDate, $toDate]);
         }
         if ($agentId) {
             $collectionOrder->where('tbl_advance_payment.agent_id', $agentId);
+            $latestRecord = AdvancePayment::where('agent_id', $agentId)
+                ->orderBy('id', 'desc')
+                ->first();
+            if ($latestRecord) {
+                $totalWallet = $latestRecord->remaining_wallet;
+            } else {
+                $totalWallet = 0;
+            }
         }
         if ($partyId) {
             $collectionOrder->where('tbl_advance_payment.party_id', $partyId);
         }
         $collection = $collectionOrder->orderBy('tbl_advance_payment.id', 'desc')->get();
-        return view('Backend.Ledger',compact('agent','party','collection'));
+        return view('Backend.Ledger', compact('agent', 'party', 'collection', 'totalWallet'));
     }
 }

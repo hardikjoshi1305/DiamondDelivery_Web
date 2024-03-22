@@ -394,7 +394,6 @@ class ExcelController extends Controller
         $diamond->sell_date = $request->sell_date;
         $diamond->sold_by = $request->sold_by;
         $diamond->client = $request->client;
-        $diamond->contact_no = $request->contact_no;
         $diamond->shape = $request->shape;
         $diamond->weight = $request->weight;
         $diamond->color = $request->color;

@@ -54,7 +54,7 @@
                     <label for="fromDate" class="form-label"><strong>Total Wallet</strong></label>
                     <div class="input-group">
                         <input type="number" name="total_wallet" id="total_wallet" class="form-control"
-                            value="" readonly>
+                            value="{{ $totalWallet }}" readonly>
                     </div>
                 </div>
             </div>
@@ -67,7 +67,6 @@
                     </a>
                 </div>
             </div>
-
         </form>
     </div>
     @if (session('success'))
@@ -83,15 +82,15 @@
                         <div class="container mt-4">
                             <div class="table-responsive">
                                 <table id="bootstrap-data-table-export" class="table table-striped table-bordered">
-
                                     <thead>
                                         <tr>
                                             <th>ID</th>
                                             <th>Date</th>
                                             <th>AgentName</th>
                                             <th>PartyName</th>
-                                            <th>Amount</th>
                                             <th>Wallet</th>
+                                            <th>Amount</th>
+                                            <th>Remaining Wallet</th>
                                             <th>Reason</th>
                                             <th>Status</th>
                                         </tr>
@@ -101,19 +100,24 @@
                                             $totalAmount = 0;
                                         @endphp
                                         @foreach ($collection as $row)
-                                        <tr>
-                                            <td>{{ $row->id }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($row->date)->format('d-m-Y') }}</td>
-                                            <td>{{ $row->agent_name }}</td>
-                                            <td>{{ $row->party_id }}</td>
-                                            <td>{{ number_format($row->amount, 2) }}</td>
-                                            <td>{{ number_format($row->wallet, 2) }}</td>
-                                            @php
-                                            $totalAmount += $row->wallet;
-                                            @endphp
-                                            <td>{{ $row->reason }}</td>
-                                            <td>{{ $row->check }}</td>
-                                        </tr>
+                                            <tr>
+                                                <td>{{ $row->id }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($row->date)->format('d-m-Y') }}</td>
+                                                <td>{{ $row->agent_name }}</td>
+                                                <td>{{ $row->party_id }}</td>
+                                                <td>{{ number_format($row->wallet, 2) }}</td>
+                                                <td>{{ number_format($row->amount, 2) }}</td>
+                                                <td>{{ number_format($row->remaining_wallet, 2) }}</td>
+                                                @php
+                                                    $paymentRecords = DB::table('tbl_advance_payment')
+                                                        ->select('agent_id', DB::raw('MAX(id) as max_id'))
+                                                        ->groupBy('agent_id')
+                                                        ->latest('id');
+                                                    $totalAmount = $paymentRecords->sum('remaining_wallet');
+                                                @endphp
+                                                <td>{{ $row->reason }}</td>
+                                                <td>{{ $row->check }}</td>
+                                            </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
@@ -134,10 +138,5 @@
 
     <!-- JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            var formattedTotalAmount = parseFloat({{ $totalAmount }}).toFixed(2);
-            $('#total_wallet').val(formattedTotalAmount);
-        });
-    </script>
+   
 @endsection
