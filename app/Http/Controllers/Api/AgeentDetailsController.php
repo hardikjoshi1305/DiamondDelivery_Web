@@ -448,7 +448,6 @@ class AgeentDetailsController extends Controller
                                 ->first();
                             if ($paymentRecord111) {
                                 $remainingWallet = $paymentRecord111->remaining_wallet;
-
                                 if ($remainingWallet > 0) {
                                     $acceptAmount = min($accept->amount, $remainingWallet);
                                     $remainingWallet -= $acceptAmount;

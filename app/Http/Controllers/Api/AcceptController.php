@@ -230,7 +230,6 @@ class AcceptController extends Controller
                             } else {
                                 $history->remaining_wallet = $aa;
                                 $history->payment = $accept->payment;
-
                             }
                             $history->reason = $paymentRecord->reason;
                             $history->check = "Debit";
@@ -245,21 +244,37 @@ class AcceptController extends Controller
                             $history->date = $accept->date;
                             $history->agent_id = $paymentRecord->agent_id;
                             $history->party_id = $paymentRecord->party_id;
-                            $history->amount = $accept->amount;
+
                             $paymentRecord111 = AdvancePayment::where('agent_id', $request->agent_id)
                                 ->where('party_id', $request->party_id)
                                 ->latest()->first();
                             $aa = $paymentRecord111->remaining_wallet - $accept->amount;
+
                             $history->wallet = $paymentRecord111->remaining_wallet;
-                            if ($accept->amount > $paymentRecord111->remaining_wallet) {
+
+                             $cash = $accept->amount - $paymentRecord111->remaining_wallet;
+
+                             if ($accept->payment == "Received") {
                                 $history->remaining_wallet = "0";
-                                $accept->remaining_amount = abs($aa);
+                                $accept->remaining_amount = "0";
+                                $history->amount = $cash; // Assuming $cash is defined elsewhere
                                 $history->status = "1";
                                 $history->payment = $accept->payment;
                             } else {
-                                $history->remaining_wallet = $aa;
-                                $history->payment = $accept->payment;
+                                if($accept->amount > $paymentRecord111->remaining_wallet){ // corrected variable name
+                                    $history->remaining_wallet = "0";
+                                    $history->payment = $accept->payment;
+                                    $accept->remaining_amount = abs($aa);
+                                    $history->amount = $accept->amount;
+                                    $history->status = "1";
+                                } else {
+                                    $history->remaining_wallet = $aa; // Assuming $aa is defined elsewhere
+                                    $history->payment = $accept->payment;
+                                    $accept->remaining_amount = abs($aa);
+                                    $history->amount = $accept->amount;
+                                }
                             }
+
                             $history->reason = $paymentRecord->reason;
                             $history->check = "Debit";
                             $history->type = "2";
